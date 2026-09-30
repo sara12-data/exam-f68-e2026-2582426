@@ -21,3 +21,29 @@ async def test_predict_unprocessable_entity():
         "feature3": 4.9
     })
     assert resp.status_code == 422
+
+# les deux tests ajoutés 
+@pytest.mark.anyio
+async def test_predict_success_features_vide():
+    async with AsyncClient(app=app, base_url="http://test") as client:
+        resp = await client.post(
+            "/predict",
+            json={"features": []}
+        )
+
+    assert resp.status_code == 200
+    assert resp.json() == {"predictions": []}
+
+
+@pytest.mark.anyio
+async def test_predict_success_features_negatif():
+    async with AsyncClient(app=app, base_url="http://test") as client:
+        resp = await client.post(
+            "/predict",
+            json={"features": [-2.0, -4.5, -10.0]}
+        )
+
+    assert resp.status_code == 200
+    assert resp.json() == {
+        "predictions": [-4.0, -9.0, -20.0]
+    }

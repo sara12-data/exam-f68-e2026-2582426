@@ -20,3 +20,19 @@ def test_predict_success_string():
 def test_predict_invalid_data ():
     with pytest.raises(ValidationError):
         PredictionRequest(features=["a", "b", "c"])
+
+#test unitaire – liste vide
+@pytest.mark.anyio
+def test_predict_success_features_vide():
+    data = PredictionRequest(features=[])
+    resp = predict_endpoint(data)
+
+    assert resp == {"predictions": []}
+
+#Test unitaire – Valeurs négatives
+@pytest.mark.anyio
+def test_predict_success_features_negatif():
+    data = PredictionRequest(features=[-2.0, -4.5, -10.0])
+    resp = predict_endpoint(data)
+
+    assert resp == {"predictions": [-4.0, -9.0, -20.0]}    
