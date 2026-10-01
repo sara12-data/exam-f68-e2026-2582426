@@ -2,21 +2,34 @@ name: CI – FastAPI
 
 on:
   pull_request:
-    branches: [develop]
+    branches: [develop, main]
 
 permissions:
   contents: read
 
 jobs:
   test:
+    # Job principal : exécute les validations automatiques du projet
     runs-on: ubuntu-24.04
+
     steps:
-      # Récupérer le code
+      # Récupère le code source du dépôt GitHub
       - name: Checkout code
         uses: actions/checkout@v4
-      # Configurer Python
+
+      # Configure l'environnement Python utilisé par le pipeline
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.10"
-          
+
+      # Installe les dépendances nécessaires à l'application et aux tests
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements-dev.txt
+
+      # Exécute les tests automatisés et calcule la couverture du code
+      - name: Run tests with coverage
+        run: |
+          PYTHONPATH=. pytest --cov=app --cov-report=term-missing
